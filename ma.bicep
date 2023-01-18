@@ -2,6 +2,17 @@ param cosmosDBAccountName string = 'toyrnd-${uniqueString(resourceGroup().id)}'
 param cosmosDBDatabaseThroughput int = 400
 param location string = resourceGroup().location
 param storageAccountName string
+@description('The name of the App Service app. This name must be globally unique.')
+param appServiceAppName string = 'toyweb-${uniqueString(resourceGroup().id)}'
+
+module appService 'modules/app-service.bicep' = {
+  name: 'app-service'
+  params: {
+    location: location
+    environmentType: environmentType
+    appServiceAppName: appServiceAppName
+  }
+}
 
 var cosmosDBDatabaseName = 'FlightTests'
 var cosmosDBContainerName = 'FlightTests'
@@ -9,6 +20,7 @@ var cosmosDBContainerPartitionKey = '/droneId'
 var logAnalyticsWorkspaceName = 'ToyLogs'
 var cosmosDBAccountDiagnosticSettingsName = 'route-logs-to-log-analytics'
 var storageAccountBlobDiagnosticSettingsName = 'route-logs-to-log-analytics'
+
 
 resource cosmosDBAccount 'Microsoft.DocumentDB/databaseAccounts@2020-04-01' = {
   name: cosmosDBAccountName
